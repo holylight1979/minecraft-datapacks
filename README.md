@@ -1,6 +1,44 @@
-# ⛏️ Minecraft Java 26.3 資料包專案 (`新的世界`)
+# ⛏️ Minecraft Java 26.3 自訂資料包中心 (`my_datapacks`)
 
-本儲存庫管理 Minecraft Java 版（版本 `26.3`，Data Pack Format `121`）的自訂資料包（Datapacks）改造專案。
+本儲存庫為 **Minecraft Java 版 `26.3`（Data Pack Format `121`）** 的中央自訂資料包中樞（位於 `.minecraft\my_datapacks`）。
+透過自動同步腳本 `sync-worlds.ps1` 與 Windows 登入排程任務 `MinecraftDatapackAutoSync`，所有在此目錄新增或更新的資料包都會自動以 **Windows 目錄連結（Directory Junction）** 掛載到 `saves` 下的每一個世界存檔中！
+
+---
+
+## 🔄 自動同步機制（開任何新世界自動擁有全套改造！）
+
+1. **中央資料夾位置**：`C:\Users\holyl\AppData\Roaming\.minecraft\my_datapacks`
+2. **背景自動監控**：Windows 排程任務 `MinecraftDatapackAutoSync` 會在背景執行 `sync-worlds.ps1 -Watch`，每 2 秒偵測一次 `saves` 資料夾。
+3. **建立新世界時的行為**：
+   - 當你在 Minecraft 點擊「建立新世界」時，背景監控會自動在 `saves\<新世界>\datapacks\` 建立指向 `my_datapacks\<資料包>` 的目錄連結。
+   - **小提醒**：對於純函數類改造，進世界輸入 `/reload` 即可生效；若包含「自訂附魔（如破壞者）」，建立新世界後**退出回主畫面再重新進入該世界一次**，即可載入全套自訂附魔註冊表！
+
+---
+
+## 🌐 朋友外網連線 + Nintendo Switch（基岩版）跨平台連線指南
+
+我們已在 `.minecraft\multiplayer-bridge` 配置好 **`playit.gg`**（外網免設定路由器穿透）與 **`Geyser Standalone`**（讓 Switch / 手機 / Win10 基岩版連進 Java 版世界）：
+
+### 🚀 房主（你）啟動步驟
+1. 進入你的單人世界（例如「`新的世界`」），在聊天室輸入以下指令固定以 **Port `25565`** 開放區域網路：
+   ```mcfunction
+   /publish true 25565
+   ```
+   *(或按 `ESC` →「對區域網路開放」，將連接埠填寫為 `25565` 後點擊開始)*
+2. 雙擊執行 `my_datapacks\啟動多人與Switch跨平台連線.bat`（或 `.minecraft\multiplayer-bridge\啟動多人與Switch跨平台連線.bat`）。
+   - 它會自動開啟兩個視窗：**`playit.gg`** 與 **`Geyser Standalone`**（監聽本地 UDP/TCP `19132` 並轉發至本地 Java `127.0.0.1:25565`）。
+3. **首次設定 `playit.gg` 隧道（只需做一次）**：
+   - 第一次開啟 `playit.gg` 時，複製視窗中的 `https://playit.gg/claim/...` 網址到瀏覽器開啟。
+   - 在網頁上建立兩條 Tunnels（隧道）：
+     1. **給電腦 Java 版朋友**：選擇 `Minecraft Java`（TCP，本地端指向 `127.0.0.1:25565`），會獲得一個公開網址（例如 `xxx.gl.joinmc.link`）。
+     2. **給 Switch / 基岩版朋友**：選擇 `Minecraft Bedrock`（UDP，本地端指向 `127.0.0.1:19132`），會獲得一個公開網址與連接埠（例如 `xxx.gl.at.ply.gg:12345`）。
+
+### 🎮 朋友如何連線？
+- **電腦 Java 版朋友**：直接打開 Minecraft Java `26.3` → 多人遊戲 → 輸入 `playit.gg` 的 Java 公開網址即可進入！**不需要自己安裝此資料包**。
+- **Nintendo Switch 朋友**：
+  1. **Switch DNS 設定**（讓 Switch 能輸入自訂伺服器網址）：到 Switch 主機「設定 → 網路 → 網路設定 → 選擇 Wi-Fi → 更改設定 → DNS 設定改為**手動**」，將主要 DNS 設為 `104.238.130.180`（BedrockConnect 公開 DNS），次要 DNS 設為 `8.8.8.8`。
+  2. 進入 Switch 版 Minecraft，隨便點進一個官方精選伺服器，就會跳出 **「連接至伺服器（Connect to a Server）」** 選單，輸入 `playit.gg` 提供的 **Bedrock 網址與 Port**！
+  3. **帳號驗證注意事項**：由於原版 Minecraft Java 單人世界開放 LAN 時強制啟用正版驗證（`online-mode=true`），Geyser 預設為 `auth-type: online`，Switch 玩家連入時畫面會提示用手機/電腦瀏覽器輸入 Microsoft 裝置代碼登入（需該帳號擁有 Minecraft Java 版授權）；若 Switch 朋友沒有買過電腦 Java 版，我們也可以隨時幫你安裝輕量 Fabric + `LanServerProperties` 模組將 LAN 設為免 Java 授權驗證（`offline`）！
 
 ---
 
@@ -42,6 +80,9 @@
 # 重新載入資料包
 /reload
 
+# 固定以 25565 Port 對區域網路開放世界（配合 playit.gg 與 Geyser）
+/publish true 25565
+
 # 領取 破壞者 I ~ V 全套獄髓鎬 + 附魔書（一般玩家可用）
 /trigger destroyer_kit
 
@@ -54,70 +95,16 @@
 /enchant @s destroyer:destroyer 3
 /enchant @s destroyer:destroyer 4
 /enchant @s destroyer:destroyer 5
-
-# 單獨領取指定等級的測試獄髓鎬（需開啟作弊/OP）
-/function destroyer:give_lv1
-/function destroyer:give_lv2
-/function destroyer:give_lv3
-/function destroyer:give_lv4
-/function destroyer:give_lv5
-```
-
----
-
-## 📁 目錄結構
-
-```text
-datapacks/
-├── README.md
-└── destroyer/
-    ├── pack.mcmeta
-    └── data/
-        ├── minecraft/
-        │   └── tags/
-        │       ├── enchantment/
-        │       │   ├── in_enchanting_table.json
-        │       │   ├── non_treasure.json
-        │       │   └── tooltip_order.json
-        │       └── function/
-        │           ├── load.json
-        │           └── tick.json
-        └── destroyer/
-            ├── enchantment/
-            │   └── destroyer.json
-            ├── predicate/
-            │   └── is_sneaking.json
-            ├── tags/
-            │   └── block/
-            │       ├── air_or_fluid.json
-            │       └── protected.json
-            └── function/
-                ├── load.mcfunction
-                ├── server_tick.mcfunction
-                ├── tick_player.mcfunction
-                ├── on_hit_block.mcfunction
-                ├── place_target_marker.mcfunction
-                ├── trigger_at_marker.mcfunction
-                ├── detect_level.mcfunction
-                ├── break_by_direction.mcfunction
-                ├── break_single.mcfunction
-                ├── show_info.mcfunction
-                ├── give_kit.mcfunction
-                ├── give_lv1.mcfunction ~ give_lv5.mcfunction
-                ├── raycast_creative_step1.mcfunction ~ step18.mcfunction
-                ├── dir/
-                │   └── north, south, west, east, down_ns, down_ew, up_ns, up_ew.mcfunction
-                └── aoe/
-                    └── <dir>_lv1.mcfunction ~ <dir>_lv5.mcfunction
 ```
 
 ---
 
 ## 📝 改版紀錄 (Changelog)
 
+### v1.1.0 (2026-10-28)
+- 將資料包中樞移至 `.minecraft\my_datapacks`，新增 `sync-worlds.ps1` 與 `MinecraftDatapackAutoSync` 背景自動掛載任務，讓所有現有與未來新建的世界自動掛載全套自訂資料包。
+- 新增 `啟動多人與Switch跨平台連線.bat` 一鍵啟動器，整合 `playit.gg` 外網穿透與 `Geyser Standalone` Switch/基岩版跨平台連線支援。
+
 ### v1.0.0 (2026-10-28)
 - 新增 **「破壞者 (Destroyer)」(`destroyer:destroyer`)** 自訂挖掘附魔（支援 Minecraft Java `26.3` / `pack_format 121`）。
-- 實作 Lv.1 (`3×1×1`)、Lv.2 (`3×3×1`)、Lv.3 (`3×3×2`)、Lv.4 (`3×3×3`)、Lv.5 (`5×5×3`) 五階段寬、高、深範圍擴展。
-- 實作 6 方向視角（東西南北 + 上下仰角）自動轉向演算法。
-- 加入 Shift 潛行單格精準挖掘切換、絲綢之觸/幸運掉落支援、容器與不可破壞方塊保護機制。
-- 新增 `/trigger destroyer_kit` 與 `/trigger destroyer_info` 便捷指令。
+- 實作 Lv.1 (`3×1×1`)、Lv.2 (`3×3×1`)、Lv.3 (`3×3×2`)、Lv.4 (`3×3×3`)、Lv.5 (`5×5×3`) 五階段寬、高、深範圍擴展與 6 方向視角自動轉向。
