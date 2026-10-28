@@ -1,0 +1,1 @@
+give @s minecraft:netherite_pickaxe[minecraft:enchantments={"destroyer:destroyer":3,"minecraft:efficiency":5,"minecraft:unbreaking":3},minecraft:custom_name={"text":"破壞者 III 獄髓鎬 [3×3×2 (寬3 高3 深2)]","color":"gold","italic":false}] 1
