@@ -1,0 +1,14 @@
+{
+	"schemaVersion": 1,
+	"id": "auto_lan_switch",
+	"version": "${version}",
+	"name": "Auto LAN for Switch (Geyser)",
+	"description": "Automatically opens any singleplayer world to LAN on port 25565 with online mode OFF and cheats allowed, so Geyser/Bedrock (Switch) players can join. Client-side only.",
+	"authors": ["holylight1979"],
+	"contact": {"sources": "https://github.com/holylight1979/minecraft-datapacks"},
+	"license": "CC0-1.0",
+	"icon": "assets/auto_lan_switch/icon.png",
+	"environment": "client",
+	"mixins": [{"config": "auto_lan_switch.client.mixins.json", "environment": "client"}],
+	"depends": {"fabricloader": ">=0.20.1", "minecraft": "~26.3", "java": ">=25"}
+}
