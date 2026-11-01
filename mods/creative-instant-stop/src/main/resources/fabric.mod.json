@@ -1,0 +1,14 @@
+{
+	"schemaVersion": 1,
+	"id": "creative_instant_stop",
+	"version": "${version}",
+	"name": "Creative Instant Stop",
+	"description": "Creative flight stops immediately when movement keys are released (Bedrock-style). Client-side only.",
+	"authors": ["holylight1979"],
+	"contact": {"sources": "https://github.com/holylight1979/minecraft-datapacks"},
+	"license": "CC0-1.0",
+	"icon": "assets/creative_instant_stop/icon.png",
+	"environment": "client",
+	"mixins": [{"config": "creative_instant_stop.client.mixins.json", "environment": "client"}],
+	"depends": {"fabricloader": ">=0.20.1", "minecraft": "~26.3", "java": ">=25"}
+}
